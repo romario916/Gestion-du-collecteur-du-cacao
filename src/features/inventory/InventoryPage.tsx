@@ -6,7 +6,6 @@ import {
   Warehouse,
   ArrowDownToLine,
   ArrowUpFromLine,
-  ArrowUpFromLine as OutgoingIcon,
   Activity,
   Sprout,
   Sun,
