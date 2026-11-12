@@ -5,8 +5,6 @@ import {
   Save,
   UserRound,
   Building2,
-  Phone,
-  Mail,
   MapPin,
   FileText,
   ClipboardList,
