@@ -6,25 +6,57 @@
 @theme {
   --font-sans: "Inter", sans-serif;
 
+  /* Vert : couleur principale */
   --color-brand-50: #f0fdf4;
   --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
   --color-brand-500: #22c55e;
   --color-brand-600: #16a34a;
   --color-brand-700: #15803d;
+  --color-brand-800: #166534;
   --color-brand-900: #14532d;
 
-  --color-accent: #d9a441;
+  /* Jaune : couleur secondaire */
+  --color-accent-50: #fefce8;
+  --color-accent-100: #fef9c3;
+  --color-accent-400: #facc15;
+  --color-accent-500: #eab308;
+  --color-accent-600: #ca8a04;
+
+  /* Bleu : informations et actions secondaires */
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+  --color-info-700: #1d4ed8;
+
+  /* Neutres */
+  --color-surface: #ffffff;
+  --color-background: #f8faf9;
+  --color-border: #e5e7eb;
+  --color-text-primary: #17251b;
+  --color-text-secondary: #64748b;
 }
 
 :root {
   font-family: "Inter", sans-serif;
   color: #17251b;
-  background: #f5f7f4;
+  background: #f8faf9;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --app-primary: #14532d;
+  --app-primary-light: #16a34a;
+  --app-accent: #eab308;
+  --app-info: #2563eb;
+  --app-background: #f8faf9;
+  --app-surface: #ffffff;
+  --app-border: #e5e7eb;
+  --app-text: #17251b;
+  --app-muted: #64748b;
 }
 
 * {
@@ -40,6 +72,8 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  background: var(--app-background);
+  color: var(--app-text);
 }
 
 button,
@@ -53,6 +87,57 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  color: var(--app-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+}
+
 #root {
   min-height: 100vh;
+}
+
+/* Sélection du texte */
+::selection {
+  background: #bbf7d0;
+  color: #14532d;
+}
+
+/* Barre de défilement */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f2;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5d1;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3a0;
+}
+
+/* Impression */
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  button {
+    display: none !important;
+  }
 }

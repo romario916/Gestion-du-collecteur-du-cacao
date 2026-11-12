@@ -41,8 +41,11 @@ export default function ReportsSummary({
   const sections = [
     {
       title: "Achats",
+      subtitle: "Approvisionnement en cacao frais",
       icon: ShoppingCart,
-      color: "text-blue-600 bg-blue-50",
+      color: "text-blue-700",
+      background: "bg-blue-50",
+      border: "border-t-blue-500",
       items: [
         {
           label: "Nombre d'achats",
@@ -60,8 +63,11 @@ export default function ReportsSummary({
     },
     {
       title: "Production",
+      subtitle: "Transformation et séchage",
       icon: Factory,
-      color: "text-amber-600 bg-amber-50",
+      color: "text-amber-700",
+      background: "bg-amber-50",
+      border: "border-t-amber-500",
       items: [
         {
           label: "Opérations terminées",
@@ -87,8 +93,11 @@ export default function ReportsSummary({
     },
     {
       title: "Ventes",
+      subtitle: "Commercialisation du cacao sec",
       icon: TrendingUp,
-      color: "text-green-600 bg-green-50",
+      color: "text-green-700",
+      background: "bg-green-50",
+      border: "border-t-green-600",
       items: [
         {
           label: "Nombre de ventes",
@@ -110,8 +119,11 @@ export default function ReportsSummary({
     },
     {
       title: "Dépenses",
+      subtitle: "Suivi des charges de l'entreprise",
       icon: Wallet,
-      color: "text-red-600 bg-red-50",
+      color: "text-red-700",
+      background: "bg-red-50",
+      border: "border-t-red-500",
       items: [
         {
           label: "Nombre de dépenses",
@@ -133,29 +145,35 @@ export default function ReportsSummary({
         return (
           <div
             key={section.title}
-            className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+            className={`overflow-hidden rounded-2xl border border-gray-200 border-t-[3px] ${section.border} bg-white shadow-sm transition duration-200 hover:shadow-md`}
           >
-            <div className="mb-5 flex items-center gap-3">
-              <div className={`rounded-lg p-2.5 ${section.color}`}>
-                <Icon size={20} />
+            <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
+              <div className={`rounded-xl p-3 ${section.background} ${section.color}`}>
+                <Icon size={21} strokeWidth={2} />
               </div>
 
-              <h3 className="font-semibold text-gray-900">
-                {section.title}
-              </h3>
+              <div className="min-w-0">
+                <h3 className="text-base font-bold text-gray-900">
+                  {section.title}
+                </h3>
+
+                <p className="mt-0.5 text-xs text-gray-500">
+                  {section.subtitle}
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-0 px-5 py-2">
               {section.items.map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between gap-4 border-b border-gray-100 pb-3 last:border-0 last:pb-0"
+                  className="flex items-start justify-between gap-4 border-b border-gray-100 py-3.5 last:border-0"
                 >
                   <span className="text-sm text-gray-500">
                     {item.label}
                   </span>
 
-                  <span className="text-right text-sm font-semibold text-gray-900">
+                  <span className="text-right text-sm font-bold text-gray-900">
                     {item.value}
                   </span>
                 </div>

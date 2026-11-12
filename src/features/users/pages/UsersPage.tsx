@@ -1,5 +1,6 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+
 import {
   Users,
   UserCheck,
@@ -7,7 +8,9 @@ import {
   ShieldCheck,
   Search,
   Plus,
+  ArrowUpRight,
 } from "lucide-react";
+
 import { toast } from "sonner";
 
 import UsersTable from "../components/UsersTable";
@@ -169,95 +172,143 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-7">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <p className="text-sm font-medium text-green-700">
-            Administration
-          </p>
+      {/* En-tête */}
+      <section className="relative overflow-hidden rounded-2xl bg-[#103F26] p-6 text-white shadow-lg sm:p-8">
+        <div className="absolute -right-12 -top-20 h-64 w-64 rounded-full border-[35px] border-white/5" />
+        <div className="absolute -bottom-24 right-36 h-48 w-48 rounded-full bg-[#E5B54B]/10 blur-2xl" />
 
-          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-gray-900">
-            Gestion des utilisateurs
-          </h1>
+        <div className="relative flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
+          <div>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-green-100">
+              <ShieldCheck size={14} />
+              Administration
+            </div>
 
-          <p className="mt-2 text-sm text-gray-500">
-            Consultez et gérez les comptes et les rôles.
-          </p>
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+              Gestion des utilisateurs
+            </h1>
+
+            <p className="mt-2 max-w-xl text-sm leading-6 text-green-100/75">
+              Gérez les comptes, les accès et les rôles des membres
+              de votre organisation.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedUser(null);
+              setIsFormOpen(true);
+            }}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#E5B54B] px-5 py-3 text-sm font-bold text-[#103F26] shadow-sm transition hover:bg-[#F0C766] active:scale-[0.98]"
+          >
+            <Plus size={18} />
+            Ajouter un utilisateur
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setSelectedUser(null);
-            setIsFormOpen(true);
-          }}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
-        >
-          <Plus size={18} />
-          Ajouter un utilisateur
-        </button>
-      </div>
+        <div className="relative mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-5 text-xs text-green-100/75">
+          <span className="inline-flex items-center gap-2">
+            <Users size={15} />
+            {users.length} compte{users.length > 1 ? "s" : ""} enregistré{users.length > 1 ? "s" : ""}
+          </span>
 
+          <span className="inline-flex items-center gap-2">
+            <UserCheck size={15} />
+            {activeUsers} actif{activeUsers > 1 ? "s" : ""}
+          </span>
+        </div>
+      </section>
+
+      {/* Statistiques */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           title="Total utilisateurs"
           value={users.length}
           icon={<Users size={21} />}
-          color="bg-blue-50 text-blue-700"
+          color="text-blue-700"
+          background="bg-blue-50"
+          border="border-t-blue-500"
         />
 
         <StatCard
           title="Comptes actifs"
           value={activeUsers}
           icon={<UserCheck size={21} />}
-          color="bg-green-50 text-green-700"
+          color="text-green-700"
+          background="bg-green-50"
+          border="border-t-green-600"
         />
 
         <StatCard
           title="Comptes inactifs"
           value={inactiveUsers}
           icon={<UserX size={21} />}
-          color="bg-red-50 text-red-700"
+          color="text-red-700"
+          background="bg-red-50"
+          border="border-t-red-500"
         />
       </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* Liste des utilisateurs */}
+      <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex flex-col justify-between gap-4 border-b border-gray-100 p-5 sm:p-6 lg:flex-row lg:items-center">
           <div>
-            <h2 className="font-bold text-gray-900">
-              Liste des utilisateurs
-            </h2>
+            <div className="flex items-center gap-2">
+              <div className="rounded-lg bg-green-50 p-2 text-green-700">
+                <Users size={19} />
+              </div>
 
-            <p className="mt-1 text-xs text-gray-500">
-              Comptes enregistrés dans cette application.
+              <h2 className="font-bold text-gray-900">
+                Liste des utilisateurs
+              </h2>
+            </div>
+
+            <p className="mt-2 text-xs text-gray-500">
+              Consultez et gérez les comptes enregistrés dans cette application.
             </p>
           </div>
 
-          <div className="relative w-full sm:max-w-xs">
+          <div className="relative w-full lg:max-w-sm">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
             />
 
             <input
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Rechercher un utilisateur..."
-              className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+              placeholder="Rechercher par nom ou email..."
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-700 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:bg-white focus:ring-4 focus:ring-green-100"
             />
           </div>
         </div>
 
-        <UsersTable
-          users={filteredUsers}
-          onEdit={(target) => {
-            setSelectedUser(target);
-            setIsFormOpen(true);
-          }}
-          onDelete={handleDelete}
-        />
-      </div>
+        <div className="p-4 sm:p-6">
+          <UsersTable
+            users={filteredUsers}
+            onEdit={(target) => {
+              setSelectedUser(target);
+              setIsFormOpen(true);
+            }}
+            onDelete={handleDelete}
+          />
+        </div>
 
+        <div className="flex flex-col gap-2 border-t border-gray-100 bg-gray-50/70 px-5 py-4 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            {filteredUsers.length} résultat{filteredUsers.length > 1 ? "s" : ""} affiché{filteredUsers.length > 1 ? "s" : ""}
+          </span>
+
+          <span className="inline-flex items-center gap-1 font-medium text-green-700">
+            Administration des accès
+            <ArrowUpRight size={14} />
+          </span>
+        </div>
+      </section>
+
+      {/* Message informatif */}
       {users.length === 0 && (
         <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
           <ShieldCheck
@@ -265,7 +316,7 @@ export default function UsersPage() {
             className="mt-0.5 shrink-0 text-amber-700"
           />
 
-          <p className="text-sm text-amber-800">
+          <p className="text-sm leading-6 text-amber-800">
             Aucun compte n'est encore enregistré dans le module.
             Les comptes de démonstration de connexion sont gérés
             séparément.
@@ -273,6 +324,7 @@ export default function UsersPage() {
         </div>
       )}
 
+      {/* Formulaire */}
       {isFormOpen && (
         <UserForm
           user={selectedUser}
@@ -294,23 +346,31 @@ function StatCard({
   value,
   icon,
   color,
+  background,
+  border,
 }: {
   title: string;
   value: number;
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
+  background: string;
+  border: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-500">{title}</p>
+    <div
+      className={`group rounded-2xl border border-gray-200 border-t-[3px] ${border} bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md`}
+    >
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-sm font-semibold text-gray-500">{title}</p>
 
-        <div className={`rounded-xl p-3 ${color}`}>
+        <div
+          className={`rounded-xl p-3 ${background} ${color} transition-transform duration-200 group-hover:scale-110`}
+        >
           {icon}
         </div>
       </div>
 
-      <p className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900">
+      <p className="mt-5 text-3xl font-extrabold tracking-tight text-gray-900">
         {value}
       </p>
     </div>

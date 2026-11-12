@@ -1,16 +1,27 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+
 import {
-  Plus,
-  Trash2,
   X,
+  Save,
   ShoppingCart,
   Package,
+  Plus,
+  Trash2,
+  UserRound,
+  CalendarDays,
+  ClipboardList,
+  Wallet,
+  Scale,
+  FileText,
+  Info,
 } from "lucide-react";
+
 import { toast } from "sonner";
 
 import type { Customer } from "../../customers/customers.types";
 import type { DryBatch } from "../../dry-stock/dry-stock.types";
+
 import type {
   CreateSaleInput,
   CreateSaleItemInput,
@@ -38,8 +49,14 @@ const emptyItem: SaleItemForm = {
 };
 
 function formatCurrency(value: number): string {
-  return `${value.toLocaleString("fr-FR")} Ar`;
+  return `${new Intl.NumberFormat("fr-FR").format(value)} Ar`;
 }
+
+const inputClassName =
+  "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-4 focus:ring-green-100/70";
+
+const labelClassName =
+  "mb-2 block text-sm font-semibold text-gray-700";
 
 export default function SaleForm({
   onCancel,
@@ -62,7 +79,9 @@ export default function SaleForm({
 
   useEffect(() => {
     setCustomers(
-      getCustomers().filter((customer) => customer.statut === "ACTIF"),
+      getCustomers().filter(
+        (customer) => customer.statut === "ACTIF",
+      ),
     );
 
     setDryBatches(getAvailableDryBatches());
@@ -97,9 +116,15 @@ export default function SaleForm({
   const getBatch = (batchId: string) =>
     dryBatches.find((batch) => batch.id === batchId);
 
-  const getUsedQuantity = (batchId: string, currentIndex: number) =>
+  const getUsedQuantity = (
+    batchId: string,
+    currentIndex: number,
+  ) =>
     items.reduce((total, item, index) => {
-      if (index === currentIndex || item.dryBatchId !== batchId) {
+      if (
+        index === currentIndex ||
+        item.dryBatchId !== batchId
+      ) {
         return total;
       }
 
@@ -119,7 +144,7 @@ export default function SaleForm({
     0,
   );
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!clientId) {
@@ -154,7 +179,9 @@ export default function SaleForm({
       }
 
       if (!Number.isFinite(prixKg) || prixKg <= 0) {
-        toast.error("Le prix au kilogramme doit être supérieur à zéro.");
+        toast.error(
+          "Le prix au kilogramme doit être supérieur à zéro.",
+        );
         return;
       }
 
@@ -213,107 +240,173 @@ export default function SaleForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4">
-      <div className="my-6 w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">
-              Nouvelle vente
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Enregistrer une vente de cacao sec
-            </p>
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-gray-950/60 p-3 backdrop-blur-sm sm:p-5">
+      <div className="my-5 w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+        {/* En-tête */}
+        <div className="relative overflow-hidden bg-[#103F26] px-5 py-6 text-white sm:px-7">
+          <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full border border-white/10" />
+          <div className="absolute -right-2 -top-8 h-32 w-32 rounded-full border border-yellow-400/20" />
+
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-green-200">
+                <ShoppingCart size={15} />
+                Gestion commerciale
+              </div>
+
+              <h2 className="mt-3 text-xl font-extrabold sm:text-2xl">
+                Nouvelle vente
+              </h2>
+
+              <p className="mt-1 text-sm text-green-100/80">
+                Enregistrer une vente de cacao sec
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={onCancel}
+              aria-label="Fermer le formulaire"
+              className="rounded-xl bg-white/10 p-2.5 text-white transition hover:bg-white/20"
+            >
+              <X size={21} />
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100"
-          >
-            <X size={20} />
-          </button>
+          <div className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500" />
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="space-y-6 p-6">
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Client *
-                </label>
+          <div className="space-y-7 p-5 sm:p-7">
+            {/* Informations générales */}
+            <section>
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-800">
+                  <ClipboardList size={20} />
+                </div>
 
-                <select
-                  value={clientId}
-                  onChange={(event) => setClientId(event.target.value)}
-                  required
-                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-green-600"
-                >
-                  <option value="">Sélectionner un client</option>
-
-                  {customers.map((customer) => (
-                    <option key={customer.id} value={customer.id}>
-                      {customer.type === "ENTREPRISE"
-                        ? customer.nomEntreprise
-                        : `${customer.nom} ${customer.prenom}`}
-                      {" — "}
-                      {customer.numero}
-                    </option>
-                  ))}
-                </select>
-
-                {customers.length === 0 && (
-                  <p className="mt-2 text-xs text-amber-600">
-                    Aucun client actif disponible.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Date de vente *
-                </label>
-
-                <input
-                  type="date"
-                  value={dateVente}
-                  onChange={(event) => setDateVente(event.target.value)}
-                  required
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-green-600"
-                />
-              </div>
-            </div>
-
-            <div className="border-t border-gray-100 pt-5">
-              <div className="mb-4 flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-gray-900">
-                    Lots de cacao sec
+                    Informations générales
                   </h3>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Sélectionnez les lots et les quantités à vendre.
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    Client et date de la transaction
                   </p>
+                </div>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className={labelClassName}>
+                    Client <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="relative">
+                    <UserRound
+                      size={17}
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+
+                    <select
+                      value={clientId}
+                      onChange={(event) =>
+                        setClientId(event.target.value)
+                      }
+                      required
+                      className={`${inputClassName} pl-10`}
+                    >
+                      <option value="">
+                        Sélectionner un client
+                      </option>
+
+                      {customers.map((customer) => (
+                        <option
+                          key={customer.id}
+                          value={customer.id}
+                        >
+                          {customer.type === "ENTREPRISE"
+                            ? customer.nomEntreprise
+                            : `${customer.nom} ${customer.prenom}`}
+                          {" — "}
+                          {customer.numero}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {customers.length === 0 && (
+                    <p className="mt-2 flex items-center gap-1.5 text-xs text-amber-700">
+                      <Info size={14} />
+                      Aucun client actif disponible.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className={labelClassName}>
+                    Date de vente{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="relative">
+                    <CalendarDays
+                      size={17}
+                      className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+
+                    <input
+                      type="date"
+                      value={dateVente}
+                      onChange={(event) =>
+                        setDateVente(event.target.value)
+                      }
+                      required
+                      className={`${inputClassName} pl-10`}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Sélection des lots */}
+            <section className="border-t border-gray-100 pt-6">
+              <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                    <Package size={20} />
+                  </div>
+
+                  <div>
+                    <h3 className="font-bold text-gray-900">
+                      Lots de cacao sec
+                    </h3>
+                    <p className="mt-0.5 text-xs text-gray-500">
+                      Sélectionnez les lots et les quantités à vendre.
+                    </p>
+                  </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={addItem}
                   disabled={dryBatches.length === 0}
-                  className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm font-semibold text-green-700 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-2.5 text-sm font-bold text-green-800 transition hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <Plus size={16} />
+                  <Plus size={17} />
                   Ajouter un lot
                 </button>
               </div>
 
               {dryBatches.length === 0 && (
-                <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center">
-                  <Package
-                    size={30}
-                    className="mx-auto mb-2 text-gray-400"
-                  />
-                  <p className="text-sm font-semibold text-gray-700">
+                <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50/70 px-5 py-9 text-center">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-400">
+                    <Package size={25} />
+                  </div>
+
+                  <p className="mt-3 text-sm font-bold text-gray-800">
                     Aucun stock sec disponible
                   </p>
+
                   <p className="mt-1 text-xs text-gray-500">
                     Les lots disponibles apparaîtront ici.
                   </p>
@@ -339,28 +432,41 @@ export default function SaleForm({
                   return (
                     <div
                       key={index}
-                      className="rounded-xl border border-gray-200 p-4"
+                      className="overflow-hidden rounded-2xl border border-gray-200 bg-white transition hover:border-green-200"
                     >
-                      <div className="mb-4 flex items-center justify-between">
-                        <span className="text-sm font-bold text-gray-700">
-                          Article {index + 1}
-                        </span>
+                      <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/70 px-4 py-3 sm:px-5">
+                        <div className="flex items-center gap-2.5">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 text-green-800">
+                            <Package size={16} />
+                          </div>
+
+                          <div>
+                            <p className="text-sm font-bold text-gray-800">
+                              Article {index + 1}
+                            </p>
+                            <p className="text-[11px] text-gray-400">
+                              Détail du lot vendu
+                            </p>
+                          </div>
+                        </div>
 
                         <button
                           type="button"
                           onClick={() => removeItem(index)}
                           disabled={items.length === 1}
-                          className="rounded-lg p-2 text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-30"
                           title="Supprimer cet article"
+                          aria-label={`Supprimer l'article ${index + 1}`}
+                          className="rounded-lg p-2 text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-30"
                         >
                           <Trash2 size={17} />
                         </button>
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-3">
+                      <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-3">
                         <div className="md:col-span-3">
-                          <label className="mb-2 block text-xs font-semibold text-gray-600">
-                            Lot de cacao sec *
+                          <label className={labelClassName}>
+                            Lot de cacao sec{" "}
+                            <span className="text-red-500">*</span>
                           </label>
 
                           <select
@@ -374,9 +480,11 @@ export default function SaleForm({
                               updateItem(index, "quantiteKg", "");
                             }}
                             required
-                            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-green-600"
+                            className={inputClassName}
                           >
-                            <option value="">Sélectionner un lot</option>
+                            <option value="">
+                              Sélectionner un lot
+                            </option>
 
                             {dryBatches.map((dryBatch) => {
                               const used = getUsedQuantity(
@@ -405,69 +513,90 @@ export default function SaleForm({
                         </div>
 
                         <div>
-                          <label className="mb-2 block text-xs font-semibold text-gray-600">
-                            Quantité (kg) *
+                          <label className={labelClassName}>
+                            Quantité (kg){" "}
+                            <span className="text-red-500">*</span>
                           </label>
 
-                          <input
-                            type="number"
-                            min="0.01"
-                            step="0.01"
-                            max={
-                              batch
-                                ? remainingQuantity
-                                : undefined
-                            }
-                            value={item.quantiteKg}
-                            onChange={(event) =>
-                              updateItem(
-                                index,
-                                "quantiteKg",
-                                event.target.value,
-                              )
-                            }
-                            required
-                            placeholder="Ex : 50"
-                            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-green-600"
-                          />
+                          <div className="relative">
+                            <Scale
+                              size={16}
+                              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                            />
+
+                            <input
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                              max={
+                                batch
+                                  ? remainingQuantity
+                                  : undefined
+                              }
+                              value={item.quantiteKg}
+                              onChange={(event) =>
+                                updateItem(
+                                  index,
+                                  "quantiteKg",
+                                  event.target.value,
+                                )
+                              }
+                              required
+                              placeholder="Ex : 50"
+                              className={`${inputClassName} pl-10`}
+                            />
+                          </div>
 
                           {batch && (
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="mt-2 text-xs text-blue-700">
                               Disponible :{" "}
-                              {remainingQuantity.toLocaleString("fr-FR")} kg
+                              <strong>
+                                {remainingQuantity.toLocaleString(
+                                  "fr-FR",
+                                )}{" "}
+                                kg
+                              </strong>
                             </p>
                           )}
                         </div>
 
                         <div>
-                          <label className="mb-2 block text-xs font-semibold text-gray-600">
-                            Prix par kg (Ar) *
+                          <label className={labelClassName}>
+                            Prix par kg (Ar){" "}
+                            <span className="text-red-500">*</span>
                           </label>
 
-                          <input
-                            type="number"
-                            min="1"
-                            step="1"
-                            value={item.prixKg}
-                            onChange={(event) =>
-                              updateItem(
-                                index,
-                                "prixKg",
-                                event.target.value,
-                              )
-                            }
-                            required
-                            placeholder="Ex : 25000"
-                            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-green-600"
-                          />
+                          <div className="relative">
+                            <Wallet
+                              size={16}
+                              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+                            />
+
+                            <input
+                              type="number"
+                              min="1"
+                              step="1"
+                              value={item.prixKg}
+                              onChange={(event) =>
+                                updateItem(
+                                  index,
+                                  "prixKg",
+                                  event.target.value,
+                                )
+                              }
+                              required
+                              placeholder="Ex : 25000"
+                              className={`${inputClassName} pl-10`}
+                            />
+                          </div>
                         </div>
 
                         <div>
-                          <label className="mb-2 block text-xs font-semibold text-gray-600">
-                            Montant
+                          <label className={labelClassName}>
+                            Montant de l'article
                           </label>
 
-                          <div className="rounded-lg bg-gray-50 px-3 py-2.5 text-sm font-bold text-green-700">
+                          <div className="flex min-h-[46px] items-center rounded-xl border border-green-100 bg-green-50 px-4 py-3 text-sm font-extrabold text-green-800">
                             {formatCurrency(lineTotal)}
                           </div>
                         </div>
@@ -476,50 +605,87 @@ export default function SaleForm({
                   );
                 })}
               </div>
-            </div>
+            </section>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Observations
-              </label>
-
-              <textarea
-                value={observations}
-                onChange={(event) => setObservations(event.target.value)}
-                rows={3}
-                placeholder="Informations complémentaires sur la vente..."
-                className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-green-600"
-              />
-            </div>
-
-            <div className="rounded-xl bg-green-50 p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-green-800">
-                    Quantité totale
-                  </p>
-                  <p className="mt-1 text-lg font-bold text-green-900">
-                    {totalQuantity.toLocaleString("fr-FR")} kg
-                  </p>
+            {/* Observations */}
+            <section className="border-t border-gray-100 pt-6">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+                  <FileText size={19} />
                 </div>
 
-                <div className="text-right">
-                  <p className="text-sm text-green-800">
-                    Montant total
-                  </p>
-                  <p className="mt-1 text-2xl font-bold text-green-900">
-                    {formatCurrency(totalAmount)}
+                <div>
+                  <h3 className="font-bold text-gray-900">
+                    Observations
+                  </h3>
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    Informations complémentaires sur la vente
                   </p>
                 </div>
               </div>
-            </div>
+
+              <textarea
+                value={observations}
+                onChange={(event) =>
+                  setObservations(event.target.value)
+                }
+                rows={3}
+                placeholder="Informations complémentaires sur la vente..."
+                className={`${inputClassName} resize-none`}
+              />
+            </section>
+
+            {/* Récapitulatif */}
+            <section className="relative overflow-hidden rounded-2xl bg-[#103F26] p-5 text-white sm:p-6">
+              <div className="absolute -right-8 -top-12 h-36 w-36 rounded-full border border-white/10" />
+
+              <div className="relative">
+                <div className="mb-5 flex items-center gap-2">
+                  <Wallet size={19} className="text-yellow-400" />
+                  <h3 className="font-bold">
+                    Récapitulatif de la vente
+                  </h3>
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-medium text-green-100/80">
+                      Quantité totale
+                    </p>
+
+                    <p className="mt-2 text-2xl font-extrabold">
+                      {totalQuantity.toLocaleString("fr-FR")} kg
+                    </p>
+
+                    <p className="mt-1 text-xs text-green-100/70">
+                      {items.length} article(s)
+                    </p>
+                  </div>
+
+                  <div className="sm:text-right">
+                    <p className="text-xs font-medium text-green-100/80">
+                      Montant total
+                    </p>
+
+                    <p className="mt-2 text-2xl font-extrabold text-yellow-400 sm:text-3xl">
+                      {formatCurrency(totalAmount)}
+                    </p>
+
+                    <p className="mt-1 text-xs text-green-100/70">
+                      Montant estimé de la transaction
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
 
-          <div className="flex flex-col-reverse gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4 sm:flex-row sm:justify-end">
+          {/* Actions */}
+          <div className="flex flex-col-reverse gap-3 border-t border-gray-100 bg-gray-50 px-5 py-4 sm:flex-row sm:justify-end sm:px-7">
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+              className="rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-100"
             >
               Annuler
             </button>
@@ -531,9 +697,9 @@ export default function SaleForm({
                 customers.length === 0 ||
                 dryBatches.length === 0
               }
-              className="flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-green-900 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <ShoppingCart size={17} />
+              <Save size={17} />
               {loading ? "Enregistrement..." : "Enregistrer la vente"}
             </button>
           </div>

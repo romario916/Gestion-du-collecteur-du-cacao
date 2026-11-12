@@ -117,24 +117,24 @@ export default function PurchasesPage() {
     }
   }
 
- function handleUpdate(data: UpdatePurchaseInput) {
-  if (!editingPurchase) {
-    return;
-  }
+  function handleUpdate(data: UpdatePurchaseInput) {
+    if (!editingPurchase) {
+      return;
+    }
 
-  try {
-    updatePurchase(editingPurchase.id, data);
-    refreshPurchases();
-    handleCloseForm();
-    toast.success("Achat modifié avec succès.");
-  } catch (error) {
-    toast.error(
-      error instanceof Error
-        ? error.message
-        : "Impossible de modifier cet achat."
-    );
+    try {
+      updatePurchase(editingPurchase.id, data);
+      refreshPurchases();
+      handleCloseForm();
+      toast.success("Achat modifié avec succès.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Impossible de modifier cet achat."
+      );
+    }
   }
-}
 
   function handleDelete(purchase: Purchase) {
     const confirmed = window.confirm(
@@ -159,120 +159,102 @@ export default function PurchasesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="space-y-7">
+      {/* En-tête */}
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
         <div>
-          <div className="flex items-center gap-2">
-            <ShoppingCart className="text-green-700" size={25} />
-            <h1 className="text-2xl font-bold text-gray-900">
-              Achats de cacao
-            </h1>
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#EAB308]" />
+
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#14532D]">
+              Approvisionnement
+            </p>
           </div>
 
-          <p className="mt-2 text-sm text-gray-500">
-            Gérez les achats de cacao auprès des producteurs.
+          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
+            Achats de cacao
+          </h1>
+
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
+            Gérez les achats de cacao auprès des producteurs et suivez
+            les transactions d'approvisionnement.
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14532D] px-5 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-[#166534] hover:shadow-md focus:outline-none focus:ring-4 focus:ring-green-100"
         >
           <Plus size={18} />
           Nouvel achat
         </button>
       </div>
 
+      {/* Statistiques */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              Nombre d'achats
-            </p>
-            <div className="rounded-xl bg-blue-50 p-3 text-blue-700">
-              <ShoppingCart size={20} />
-            </div>
-          </div>
+        <StatCard
+          title="Nombre d'achats"
+          value={purchases.length.toLocaleString("fr-FR")}
+          description="Achats enregistrés"
+          icon={<ShoppingCart size={21} />}
+          iconColor="bg-blue-50 text-[#2563EB]"
+          accentColor="bg-[#2563EB]"
+        />
 
-          <p className="mt-4 text-2xl font-bold text-gray-900">
-            {purchases.length}
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            Achats enregistrés
-          </p>
-        </div>
+        <StatCard
+          title="Quantité totale"
+          value={`${totalQuantity.toLocaleString("fr-FR")} kg`}
+          description="Volume total acheté"
+          icon={<Package size={21} />}
+          iconColor="bg-green-50 text-[#15803D]"
+          accentColor="bg-[#15803D]"
+        />
 
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              Quantité totale
-            </p>
-            <div className="rounded-xl bg-purple-50 p-3 text-purple-700">
-              <Package size={20} />
-            </div>
-          </div>
+        <StatCard
+          title="Montant total"
+          value={formatCurrency(totalAmount)}
+          description="Valeur de tous les achats"
+          icon={<Wallet size={21} />}
+          iconColor="bg-amber-50 text-[#CA8A04]"
+          accentColor="bg-[#EAB308]"
+          compact
+        />
 
-          <p className="mt-4 text-2xl font-bold text-gray-900">
-            {totalQuantity.toLocaleString("fr-FR")} kg
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            Volume total acheté
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              Montant total
-            </p>
-            <div className="rounded-xl bg-green-50 p-3 text-green-700">
-              <Wallet size={20} />
-            </div>
-          </div>
-
-          <p className="mt-4 text-xl font-bold text-gray-900">
-            {formatCurrency(totalAmount)}
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            Valeur de tous les achats
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              En attente
-            </p>
-            <div className="rounded-xl bg-orange-50 p-3 text-orange-700">
-              <Clock size={20} />
-            </div>
-          </div>
-
-          <p className="mt-4 text-2xl font-bold text-gray-900">
-            {pendingPurchases}
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            {validatedPurchases} achat(s) validé(s)
-          </p>
-        </div>
+        <StatCard
+          title="En attente"
+          value={pendingPurchases.toLocaleString("fr-FR")}
+          description={`${validatedPurchases} achat(s) validé(s)`}
+          icon={<Clock size={21} />}
+          iconColor="bg-orange-50 text-orange-600"
+          accentColor="bg-orange-500"
+        />
       </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white shadow-sm">
-        <div className="flex flex-col justify-between gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center">
+      {/* Historique des achats */}
+      <section className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm">
+        <div className="flex flex-col justify-between gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:p-6">
           <div>
-            <h2 className="font-bold text-gray-900">
-              Historique des achats
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Consultez et gérez les transactions enregistrées.
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-50 text-[#14532D]">
+                <ShoppingCart size={18} />
+              </div>
+
+              <h2 className="font-bold text-gray-900">
+                Historique des achats
+              </h2>
+            </div>
+
+            <p className="mt-2 text-xs text-gray-500">
+              Consultez et gérez les transactions d'approvisionnement
+              enregistrées.
             </p>
           </div>
 
           <div className="relative w-full sm:max-w-xs">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
 
             <input
@@ -280,26 +262,29 @@ export default function PurchasesPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Rechercher un achat..."
-              className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2.5 pl-10 pr-4 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 hover:border-gray-300 focus:border-[#14532D] focus:bg-white focus:ring-4 focus:ring-green-50"
             />
           </div>
         </div>
 
-        <PurchasesTable
-          purchases={filteredPurchases}
-          onView={setDetailsPurchase}
-          onEdit={handleOpenEdit}
-          onDelete={handleDelete}
-        />
+        <div className="p-4 sm:p-6">
+          <PurchasesTable
+            purchases={filteredPurchases}
+            onView={setDetailsPurchase}
+            onEdit={handleOpenEdit}
+            onDelete={handleDelete}
+          />
+        </div>
 
-        <div className="border-t border-gray-100 px-5 py-4">
+        <div className="border-t border-gray-100 bg-gray-50/60 px-5 py-3">
           <p className="text-xs text-gray-500">
             {filteredPurchases.length} résultat(s) affiché(s) sur{" "}
             {purchases.length} achat(s).
           </p>
         </div>
-      </div>
+      </section>
 
+      {/* Formulaire */}
       {isFormOpen && (
         <PurchaseForm
           purchase={editingPurchase}
@@ -309,12 +294,61 @@ export default function PurchasesPage() {
         />
       )}
 
+      {/* Détails */}
       {detailsPurchase && (
         <PurchaseDetails
           purchase={detailsPurchase}
           onClose={() => setDetailsPurchase(null)}
         />
       )}
+    </div>
+  );
+}
+
+function StatCard({
+  title,
+  value,
+  description,
+  icon,
+  iconColor,
+  accentColor,
+  compact = false,
+}: {
+  title: string;
+  value: string;
+  description: string;
+  icon: React.ReactNode;
+  iconColor: string;
+  accentColor: string;
+  compact?: boolean;
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className={`absolute left-0 top-0 h-full w-1 ${accentColor}`} />
+
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-gray-500">
+            {title}
+          </p>
+
+          <p
+            className={`mt-3 break-words font-extrabold tracking-tight text-gray-900 ${
+              compact ? "text-lg sm:text-xl" : "text-2xl"
+            }`}
+          >
+            {value}
+          </p>
+
+          <p className="mt-2 text-xs text-gray-400">
+            {description}
+          </p>
+        </div>
+
+        <div className={`shrink-0 rounded-xl p-3 ${iconColor}`}>
+          {icon}
+        </div>
+      </div>
     </div>
   );
 }

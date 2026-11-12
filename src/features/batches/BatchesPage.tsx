@@ -6,6 +6,8 @@ import {
   Plus,
   Scale,
   Warehouse,
+  Wheat,
+  ArrowUpRight,
 } from "lucide-react";
 
 import type { Batch, CreateBatchInput } from "./batches.types";
@@ -18,6 +20,56 @@ import {
 
 import BatchesTable from "./components/BatchesTable";
 import BatchForm from "./components/BatchForm";
+
+interface StatCardProps {
+  title: string;
+  value: string;
+  description: string;
+  icon: React.ReactNode;
+  iconBg: string;
+  iconColor: string;
+  accent: string;
+}
+
+function StatCard({
+  title,
+  value,
+  description,
+  icon,
+  iconBg,
+  iconColor,
+  accent,
+}: StatCardProps) {
+  return (
+    <div className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+      <div
+        className={`absolute bottom-0 left-0 h-1 w-full ${accent}`}
+      />
+
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-gray-500">
+            {title}
+          </p>
+
+          <p className="mt-3 text-2xl font-bold tracking-tight text-gray-900">
+            {value}
+          </p>
+
+          <p className="mt-2 text-xs text-gray-400">
+            {description}
+          </p>
+        </div>
+
+        <div
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconBg} ${iconColor}`}
+        >
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function BatchesPage() {
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -81,82 +133,118 @@ export default function BatchesPage() {
   ).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="space-y-7">
+      {/* En-tête */}
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Gestion des lots
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#E5B54B]" />
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#14532D]">
+              Gestion des stocks
+            </p>
+          </div>
+
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            Lots de cacao frais
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Suivez les lots de cacao issus des achats validés.
+
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-gray-500">
+            Suivez les lots de cacao issus des achats validés et
+            consultez leurs quantités disponibles.
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14532D] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-green-900/10 transition-all duration-200 hover:bg-[#103F26] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-100"
         >
           <Plus size={18} />
           Nouveau lot
         </button>
       </div>
 
+      {/* Statistiques */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              Nombre de lots
-            </p>
-            <Package className="text-green-700" size={21} />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">
-            {batches.length}
-          </p>
-        </div>
+        <StatCard
+          title="Nombre de lots"
+          value={batches.length.toLocaleString("fr-FR")}
+          description="Total des lots enregistrés"
+          icon={<Package size={22} />}
+          iconBg="bg-green-50"
+          iconColor="text-[#14532D]"
+          accent="bg-[#14532D]"
+        />
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              Lots en stock
-            </p>
-            <Warehouse className="text-green-700" size={21} />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">
-            {stockLots}
-          </p>
-        </div>
+        <StatCard
+          title="Lots en stock"
+          value={stockLots.toLocaleString("fr-FR")}
+          description="Lots actuellement disponibles"
+          icon={<Warehouse size={22} />}
+          iconBg="bg-emerald-50"
+          iconColor="text-emerald-700"
+          accent="bg-emerald-500"
+        />
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              Quantité initiale
-            </p>
-            <Scale className="text-amber-600" size={21} />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">
-            {totalInitial.toLocaleString("fr-FR")} kg
-          </p>
-        </div>
+        <StatCard
+          title="Quantité initiale"
+          value={`${totalInitial.toLocaleString("fr-FR")} kg`}
+          description="Poids total enregistré à l'origine"
+          icon={<Scale size={22} />}
+          iconBg="bg-amber-50"
+          iconColor="text-amber-600"
+          accent="bg-[#E5B54B]"
+        />
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-500">
-              Quantité disponible
-            </p>
-            <Package className="text-blue-600" size={21} />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">
-            {totalAvailable.toLocaleString("fr-FR")} kg
-          </p>
-        </div>
+        <StatCard
+          title="Quantité disponible"
+          value={`${totalAvailable.toLocaleString("fr-FR")} kg`}
+          description="Poids encore disponible"
+          icon={<Wheat size={22} />}
+          iconBg="bg-blue-50"
+          iconColor="text-blue-600"
+          accent="bg-blue-600"
+        />
       </div>
 
-      <BatchesTable
-        batches={batches}
-        onDelete={handleDelete}
-      />
+      {/* Tableau des lots */}
+      <section className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div className="flex flex-col justify-between gap-3 border-b border-gray-100 px-5 py-5 sm:flex-row sm:items-center sm:px-6">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-50 text-[#14532D]">
+                <Package size={19} />
+              </div>
 
+              <div>
+                <h2 className="text-base font-bold text-gray-900">
+                  Historique des lots
+                </h2>
+                <p className="mt-0.5 text-xs text-gray-400">
+                  Gestion et suivi des lots de cacao frais
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-start rounded-lg bg-green-50 px-3 py-2 sm:self-center">
+            <ArrowUpRight size={15} className="text-[#14532D]" />
+            <span className="text-xs font-semibold text-[#14532D]">
+              {batches.length} lot{batches.length > 1 ? "s" : ""} enregistré
+              {batches.length > 1 ? "s" : ""}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-3 sm:p-5">
+          <BatchesTable
+            batches={batches}
+            onDelete={handleDelete}
+          />
+        </div>
+      </section>
+
+      {/* Formulaire */}
       {isFormOpen && (
         <BatchForm
           onClose={() => setIsFormOpen(false)}

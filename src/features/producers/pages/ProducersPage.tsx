@@ -83,7 +83,6 @@ export default function ProducersPage() {
 
   function handleToggleStatus(target: Producer) {
     const newStatus = !target.actif;
-
     const action = newStatus ? "réactiver" : "désactiver";
 
     const confirmed = window.confirm(
@@ -173,18 +172,23 @@ export default function ProducersPage() {
 
   return (
     <div className="space-y-7">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* En-tête */}
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
         <div>
-          <p className="text-sm font-medium text-green-700">
-            Gestion agricole
-          </p>
+          <div className="mb-2 flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#EAB308]" />
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#14532D]">
+              Gestion agricole
+            </p>
+          </div>
 
-          <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
             Gestion des producteurs
           </h1>
 
-          <p className="mt-2 text-sm text-gray-500">
-            Gérez les producteurs et les informations de leurs exploitations.
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
+            Gérez les producteurs et les informations de leurs exploitations
+            agricoles.
           </p>
         </div>
 
@@ -194,52 +198,67 @@ export default function ProducersPage() {
             setSelectedProducer(null);
             setIsFormOpen(true);
           }}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-green-800"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14532D] px-5 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-[#166534] hover:shadow-md focus:outline-none focus:ring-4 focus:ring-green-100"
         >
           <Plus size={18} />
           Ajouter un producteur
         </button>
       </div>
 
+      {/* Statistiques */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           title="Total producteurs"
           value={producers.length}
           icon={<Users size={21} />}
-          color="bg-blue-50 text-blue-700"
+          iconColor="bg-blue-50 text-[#2563EB]"
+          accentColor="bg-[#2563EB]"
+          description="Producteurs enregistrés"
         />
 
         <StatCard
           title="Producteurs actifs"
           value={activeProducers}
           icon={<UserCheck size={21} />}
-          color="bg-green-50 text-green-700"
+          iconColor="bg-green-50 text-[#15803D]"
+          accentColor="bg-[#15803D]"
+          description="Producteurs opérationnels"
         />
 
         <StatCard
           title="Producteurs inactifs"
           value={inactiveProducers}
           icon={<UserX size={21} />}
-          color="bg-red-50 text-red-700"
+          iconColor="bg-amber-50 text-[#CA8A04]"
+          accentColor="bg-[#EAB308]"
+          description="Producteurs désactivés"
         />
       </div>
 
-      <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6">
-        <div className="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* Liste des producteurs */}
+      <section className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm">
+        <div className="flex flex-col justify-between gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:p-6">
           <div>
-            <h2 className="font-bold text-gray-900">
-              Liste des producteurs
-            </h2>
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-50 text-[#14532D]">
+                <Users size={18} />
+              </div>
 
-            <p className="mt-1 text-xs text-gray-500">
-              Retrouvez les producteurs enregistrés dans l'application.
+              <h2 className="font-bold text-gray-900">
+                Liste des producteurs
+              </h2>
+            </div>
+
+            <p className="mt-2 text-xs text-gray-500">
+              Retrouvez et gérez les producteurs enregistrés dans
+              l'application.
             </p>
           </div>
 
           <div className="relative w-full sm:max-w-xs">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
 
             <input
@@ -247,23 +266,33 @@ export default function ProducersPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Rechercher un producteur..."
-              className="w-full rounded-xl border border-gray-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-green-600 focus:ring-2 focus:ring-green-100"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2.5 pl-10 pr-4 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 hover:border-gray-300 focus:border-[#14532D] focus:bg-white focus:ring-4 focus:ring-green-50"
             />
           </div>
         </div>
 
-        <ProducersTable
-          producers={filteredProducers}
-          onView={(target) => setDetailsProducer(target)}
-          onEdit={(target) => {
-            setSelectedProducer(target);
-            setIsFormOpen(true);
-          }}
-          onDelete={handleDelete}
-          onToggleStatus={handleToggleStatus}
-        />
-      </div>
+        <div className="p-4 sm:p-6">
+          <ProducersTable
+            producers={filteredProducers}
+            onView={(target) => setDetailsProducer(target)}
+            onEdit={(target) => {
+              setSelectedProducer(target);
+              setIsFormOpen(true);
+            }}
+            onDelete={handleDelete}
+            onToggleStatus={handleToggleStatus}
+          />
+        </div>
 
+        <div className="border-t border-gray-100 bg-gray-50/60 px-5 py-3">
+          <p className="text-xs text-gray-500">
+            {filteredProducers.length} producteur(s) affiché(s)
+            {search.trim() && " après recherche"}
+          </p>
+        </div>
+      </section>
+
+      {/* Détails */}
       {detailsProducer && (
         <ProducerDetails
           producer={detailsProducer}
@@ -271,6 +300,7 @@ export default function ProducersPage() {
         />
       )}
 
+      {/* Formulaire */}
       {isFormOpen && (
         <ProducerForm
           producer={selectedProducer}
@@ -290,26 +320,42 @@ function StatCard({
   title,
   value,
   icon,
-  color,
+  iconColor,
+  accentColor,
+  description,
 }: {
   title: string;
   value: number;
   icon: React.ReactNode;
-  color: string;
+  iconColor: string;
+  accentColor: string;
+  description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-gray-500">{title}</p>
+    <div className="relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div
+        className={`absolute left-0 top-0 h-full w-1 ${accentColor}`}
+      />
 
-        <div className={`rounded-xl p-3 ${color}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium text-gray-500">
+            {title}
+          </p>
+
+          <p className="mt-3 text-3xl font-extrabold tracking-tight text-gray-900">
+            {value}
+          </p>
+
+          <p className="mt-2 text-xs text-gray-400">
+            {description}
+          </p>
+        </div>
+
+        <div className={`rounded-xl p-3 ${iconColor}`}>
           {icon}
         </div>
       </div>
-
-      <p className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900">
-        {value}
-      </p>
     </div>
   );
 }
